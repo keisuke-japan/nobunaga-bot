@@ -8,4 +8,4 @@ def read_root():
 
 @app.get("/healthcheck")
 async def healthcheck()->dict:
-    return {"status": "yes"}
+    return {"status": "ok"}
