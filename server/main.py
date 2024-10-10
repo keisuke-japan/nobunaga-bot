@@ -1,18 +1,21 @@
-from fastapi import FastAPI
+import os
+import sys
+import time
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-import sys
-import os
 
 # /src をパスに追加
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from server.nobunaga_agent import ask_question
 
-
 app = FastAPI()
 
-origins = ["http://localhost:5173"]# Frontendのオリジンをここに書く
+API_KEY = "your_secret_api_key"
+
+origins = ["http://localhost:5173"]  # Frontendのオリジンをここに書く
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -27,15 +30,46 @@ class Message(BaseModel):
 
 
 class LLMResponse(BaseModel):
-    text: str
+    answer: str
+    process_time: float
 
 
 @app.get("/healthcheck")
 def healthcheck():
-    return {}
+    return {"status": "ok"}
 
 
 @app.post("/llm")
-async def run_llm(message: Message) -> LLMResponse:
+async def run_llm(message: Message, api_key: str) -> LLMResponse:
+    start_time = time.time()
+
     answer = ask_question(message.text)
-    return LLMResponse(text=answer)
+    with open("server/apikey.txt") as file:
+        id_set = {line.strip() for line in file}
+
+    if api_key not in id_set:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    # return LLMResponse(text=answer)
+
+    # llm_response = {"answer" :answer}
+
+    process_time = time.time() - start_time
+
+    llm_response = LLMResponse(answer=answer, process_time=process_time)
+    return llm_response
+
+
+# @app.get("/secure-data")
+# def read_secure_data(api_key: str):
+#     if api_key != API_KEY:
+#         raise HTTPException(status_code=403, detail="Invalid API Key")
+#     return {"message": "This is secured data."}
+
+# 逐次検索
+#  with open("server/apikey.txt","r") as file:
+#         for line in file:
+#             if api_key in line:
+#                 break
+#         else :
+#             raise HTTPException(status_code=403, detail="Invalid API Key")
+#     # return LLMResponse(text=answer)
