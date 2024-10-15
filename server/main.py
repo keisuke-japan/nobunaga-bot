@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,7 +30,6 @@ class Message(BaseModel):
 
 class LLMResponse(BaseModel):
     answer: str
-    process_time: float
 
 
 @app.get("/healthcheck")
@@ -41,35 +39,12 @@ def healthcheck():
 
 @app.post("/llm")
 async def run_llm(message: Message, api_key: str) -> LLMResponse:
-    start_time = time.time()
-
     answer = ask_question(message.text)
     with open("server/apikey.txt") as file:
         id_set = {line.strip() for line in file}
 
     if api_key not in id_set:
         raise HTTPException(status_code=403, detail="Invalid API Key")
-    # return LLMResponse(text=answer)
 
-    # llm_response = {"answer" :answer}
-
-    process_time = time.time() - start_time
-
-    llm_response = LLMResponse(answer=answer, process_time=process_time)
+    llm_response = LLMResponse(answer=answer)
     return llm_response
-
-
-# @app.get("/secure-data")
-# def read_secure_data(api_key: str):
-#     if api_key != API_KEY:
-#         raise HTTPException(status_code=403, detail="Invalid API Key")
-#     return {"message": "This is secured data."}
-
-# 逐次検索
-#  with open("server/apikey.txt","r") as file:
-#         for line in file:
-#             if api_key in line:
-#                 break
-#         else :
-#             raise HTTPException(status_code=403, detail="Invalid API Key")
-#     # return LLMResponse(text=answer)
