@@ -1,8 +1,10 @@
 import os
 import sys
 
+# import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+
+# from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 # /src をパスに追加
@@ -13,15 +15,6 @@ from server.nobunaga_agent import ask_question
 app = FastAPI()
 
 API_KEY = "your_secret_api_key"
-
-origins = ["http://localhost:5173"]  # Frontendのオリジンをここに書く
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class Message(BaseModel):
