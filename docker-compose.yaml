@@ -9,6 +9,7 @@ services:
     volumes:
       - .dockervenv:/src/.venv
       - .:/src
+    container_name: nobunaga-bot
     ports:
       - 8080:8080
     

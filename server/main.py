@@ -1,14 +1,7 @@
-import os
-import sys
-
-# import uvicorn
 from fastapi import FastAPI, HTTPException
 
 # from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-
-# /src をパスに追加
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from server.nobunaga_agent import ask_question
 
