@@ -186,4 +186,6 @@ build/
 dist/
 *.egg-info/
 
-.vscode/
+
+.DS_Store
+Thumbs.db
