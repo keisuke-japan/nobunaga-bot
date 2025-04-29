@@ -187,3 +187,8 @@ dist/
 *.egg-info/
 
 .vscode/
+
+# ---- Editor / OS ----
+.vscode/
+.DS_Store
+Thumbs.db
